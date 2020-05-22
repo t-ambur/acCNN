@@ -1,7 +1,7 @@
 import keyInjector as KI
 import random
 
-KEYPRESS_DELAY = .05
+KEYPRESS_DELAY = KI.NO_DELAY
 
 
 class Control:
