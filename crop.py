@@ -24,8 +24,6 @@ def crop_store(image_name):
         number = i + 2
         im_cropped.save("store\\pos" + str(number) + ".png")
 
-    print("Done.")
-
 
 def crop_gold(image_name):
     im = Image.open(image_name)
@@ -38,8 +36,6 @@ def crop_gold(image_name):
 
     im_cropped = im.crop((x1, y1, x2, y2))
     im_cropped.save("status\\gold.png")
-
-    print("Done.")
 
 
 def crop_level(image_name):
@@ -54,8 +50,6 @@ def crop_level(image_name):
     im_cropped = im.crop((x1, y1, x2, y2))
     im_cropped.save("status\\level.png")
 
-    print("Done.")
-
 
 def crop_bag_icon(image_name):
     im = Image.open(image_name)
@@ -68,5 +62,3 @@ def crop_bag_icon(image_name):
 
     im_cropped = im.crop((x1, y1, x2, y2))
     im_cropped.save("status\\bagicon.png")
-
-    print("Done.")
