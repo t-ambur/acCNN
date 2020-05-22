@@ -2,12 +2,13 @@ import controls
 
 
 class Player:
-    def __init__(self, ahk):
+    def __init__(self, ahk, rnd=1):
         self.controller = controls.Control(ahk)
         self.gold = 5
-        self.round = 1
-        self.exp = 0
+        self.round = rnd
+        self.exp = (rnd-1)
         self.level = 1
+        self.check_levelup()
         self.bag_items = 0
         self.deployed_chars = 0
         self.chars_on_bench = 0
@@ -27,11 +28,13 @@ class Player:
             self.deploy_character()
             self.remove_from_bench(1)
 
-    def choose_item(self, num_items):
+    def choose_item(self, num_items, option):
         if num_items == 1:
             self.controller.grab_item(2)
+            self.add_items(1)
         elif num_items == 3:
-            self.controller.grab_item(1)
+            self.controller.grab_item(option)
+            self.add_items(1)
 
     def get_store(self):
         return self.store
@@ -44,21 +47,21 @@ class Player:
         lvl = self.level
         if x >= 1 and lvl <= 1:
             self.level = 2
-        elif x >= 2 and lvl <= 2:
+        if x >= 2 and lvl <= 2:
             self.level = 3
-        elif x >= 4 and lvl <= 3:
+        if x >= 4 and lvl <= 3:
             self.level = 4
-        elif x >= 8 and lvl <= 4:
+        if x >= 8 and lvl <= 4:
             self.level = 5
-        elif x >= 16 and lvl <= 5:
+        if x >= 16 and lvl <= 5:
             self.level = 6
-        elif x >= 32 and lvl <= 6:
+        if x >= 32 and lvl <= 6:
             self.level = 7
-        elif x >= 54 and lvl <= 7:
+        if x >= 54 and lvl <= 7:
             self.level = 8
-        elif x >= 86 and lvl <= 8:
+        if x >= 86 and lvl <= 8:
             self.level = 9
-        elif x >= 126 and lvl <= 9:
+        if x >= 126 and lvl <= 9:
             self.level = 10
 
     def add_gold(self, amount):
@@ -115,8 +118,12 @@ class Player:
                     self.store.buy_pos(pos)
                     self.add_to_bench()
                     self.spend_gold(cost)
+                    self.controller.buy(pos)
                     return True
         return False
+
+    def leave_store(self):
+        self.controller.toggle_store()
 
 
 class Store:
@@ -144,19 +151,22 @@ class Store:
 
 
 class State:
-    def __init__(self):
+    def __init__(self, rnd=1):
         self.start = "shop"
         self.current = self.start
         self.next = "board"
-        self.round = 1
+        self.round = rnd
 
     def get_state(self):
         return self.current
 
     def next_state(self):
-        self.current = self.next
         self.determine_next_state()
+        self.current = self.next
         return self.current
+
+    def get_round(self):
+        return self.round
 
     def determine_next_state(self):
         if self.current is "shop":
@@ -167,7 +177,7 @@ class State:
         elif self.current is "board":
             if self.round < 4:
                 self.next = "item"
-            elif self.round >= 10 and self.round % 5 == 0:
+            elif self.round >= 9 and (self.round+1) % 5 == 0:
                 self.next = "item"
             else:
                 self.round += 1

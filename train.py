@@ -6,6 +6,7 @@ import pickle
 import numpy as np
 import constants as c
 import os
+import sys
 
 # fix the memory usage problems on both gpus
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
@@ -68,22 +69,50 @@ def train(X, y, dense_layers, layer_sizes, conv_layers, output_size):
     return model
 
 
-# screen.model
-# 3 EPOCHS
-print("training screen model...", flush=True)
-##########
-dense_layers = [0]
-layer_sizes = [32]  # nodes
-conv_layers = [1]
-output_size = len(c.SCREEN_CATEGORIES)
-path = c.SCREEN_PATH
-model_path = c.SCREEN_MODEL_PATH
-##########
-print("loading pickle files...", flush=True)
-data, labels = load_pickles(path)
-model = train(data, labels, dense_layers, layer_sizes, conv_layers, output_size)
-print("saving model...", flush=True)
-save_location = model_path
-model.save(save_location)
-print("Complete. Model saved to:", save_location)
-print("\n\n", flush=True)
+prep_num = 0
+if len(sys.argv) > 1:
+    try:
+        prep_num = int(sys.argv[1])
+    except Exception:
+        prep_num = 0
+if prep_num == 0 or prep_num == 1:
+    # screen.model
+    # 3 EPOCHS
+    print("training screen model...", flush=True)
+    ##########
+    dense_layers = [0]
+    layer_sizes = [32]  # nodes
+    conv_layers = [1]
+    output_size = len(c.SCREEN_CATEGORIES)
+    path = c.SCREEN_PATH
+    model_path = c.SCREEN_MODEL_PATH
+    ##########
+    print("loading pickle files...", flush=True)
+    data, labels = load_pickles(path)
+    model = train(data, labels, dense_layers, layer_sizes, conv_layers, output_size)
+    print("saving model...", flush=True)
+    save_location = model_path
+    model.save(save_location)
+    print("Complete. Model saved to:", save_location)
+    print("\n\n", flush=True)
+
+if prep_num == 0 or prep_num == 2:
+    # character.model
+    # 3 EPOCHS
+    print("training character model...", flush=True)
+    ##########
+    dense_layers = [0]
+    layer_sizes = [32]  # nodes
+    conv_layers = [1]
+    output_size = len(c.CHAR_CATEGORIES)
+    path = c.CHAR_PATH
+    model_path = c.CHAR_MODEL_PATH
+    ##########
+    print("loading pickle files...", flush=True)
+    data, labels = load_pickles(path)
+    model = train(data, labels, dense_layers, layer_sizes, conv_layers, output_size)
+    print("saving model...", flush=True)
+    save_location = model_path
+    model.save(save_location)
+    print("Complete. Model saved to:", save_location)
+    print("\n\n", flush=True)

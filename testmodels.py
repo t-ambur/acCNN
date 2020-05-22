@@ -1,8 +1,9 @@
 import pickle
-import tensorflow as tf
 import numpy as np
 import time
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+import tensorflow as tf
 import constants as c
 
 # to run tensorboard:
@@ -10,12 +11,12 @@ import constants as c
 
 
 # loops to create different combinations for testing
-def test_layers():
-    inputlocation = os.path.join(c.SCREEN_PATH, c.X_NAME)
+def test_layers(path, size):
+    inputlocation = os.path.join(path, c.X_NAME)
     pickle_in = open(inputlocation, 'rb')
     X = pickle.load(pickle_in)
 
-    inputlocation = os.path.join(c.SCREEN_PATH, c.Y_NAME)
+    inputlocation = os.path.join(path, c.Y_NAME)
     pickle_in = open(inputlocation, 'rb')
     y = pickle.load(pickle_in)
 
@@ -54,7 +55,7 @@ def test_layers():
                 # model.add(tf.keras.layers.Activation("relu"))
 
                 # output
-                model.add(tf.keras.layers.Dense(len(c.SCREEN_CATEGORIES)))
+                model.add(tf.keras.layers.Dense(size))
                 model.add(tf.keras.layers.Activation("softmax"))
 
                 model.compile(loss="sparse_categorical_crossentropy",
@@ -63,9 +64,9 @@ def test_layers():
 
                 y = np.asarray(y)
 
-                model.fit(X, y, batch_size=c.BATCH_SIZE,
+                model.fit(X, y, batch_size=6,
                           epochs=c.EPOCHS, validation_split=c.VALIDATION_SPLIT,
                           callbacks=[tensorboard])
 
 
-test_layers()
+test_layers(c.SCREEN_PATH, len(c.SCREEN_CATEGORIES))
