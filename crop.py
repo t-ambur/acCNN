@@ -1,7 +1,8 @@
 from PIL import Image
 import constants as c
-import sys
 
+
+# 1600x900
 
 
 def crop_store(image_name):
@@ -26,5 +27,46 @@ def crop_store(image_name):
     print("Done.")
 
 
-if len(sys.argv) > 1:
-    crop_store(sys.argv[1])
+def crop_gold(image_name):
+    im = Image.open(image_name)
+
+    x1 = 1230
+    x2 = 1280
+
+    y1 = 10
+    y2 = 40
+
+    im_cropped = im.crop((x1, y1, x2, y2))
+    im_cropped.save("status\\gold.png")
+
+    print("Done.")
+
+
+def crop_level(image_name):
+    im = Image.open(image_name)
+
+    x1 = 168
+    x2 = 188
+
+    y1 = 750
+    y2 = 775
+
+    im_cropped = im.crop((x1, y1, x2, y2))
+    im_cropped.save("status\\level.png")
+
+    print("Done.")
+
+
+def crop_bag_icon(image_name):
+    im = Image.open(image_name)
+
+    x1 = 1308
+    x2 = 1343
+
+    y1 = 755
+    y2 = 787
+
+    im_cropped = im.crop((x1, y1, x2, y2))
+    im_cropped.save("status\\bagicon.png")
+
+    print("Done.")

@@ -10,6 +10,8 @@ import time
 import constants as c
 import controls
 import predict
+import crop
+import textConverter
 ####
 
 # fix the memory usage problems on both gpus
@@ -41,17 +43,21 @@ def screenshot():
     w = window.width
     im = ImageGrab.grab(bbox=(x, y+c.SCREEN_SHOT_Y_REMOVAL, x + w, y + h))
     location = "screenshots\\screenshot" + str(counter) + ".png"
+    counter += 1
     im.save(location)
+    return location
     #  t = time.time()
     #  print("Window Captured:", str(location), flush=True)
+
+
+def get_index_name(location):
     current_index = read(location)
     index_name = str(c.SCREEN_CATEGORIES[current_index])
     #  t = time.time() - t
     if current_index is not None:
-        print(index_name + " " + str(counter), flush=True)
+        print(index_name, flush=True)
     else:
         print("Prediction returned None", flush=True)
-    counter += 1
     return index_name
 
 
@@ -60,14 +66,44 @@ def read(image):
     return predict.predict(image, model_screen, "screen")
 
 
+def get_level(location):
+    crop.crop_level(location)
+    return "LEVEL=" + str(textConverter.get_level()) + " "
+
+
+def get_shop_info(location):
+    crop.crop_gold(location)
+    crop.crop_store(location)
+    return "GOLD=" + textConverter.get_gold() + " "
+
+
+def get_board_info(location):
+    crop.crop_bag_icon(location)
+    return "ITEMS_IN_BAG=" + textConverter.get_bag_items() + " "
+
+
 looping = True
 #  loop until keyboard interrupt
 print("looping", flush=True)
 try:
     while looping:
-        screen_name = screenshot()
+        location = screenshot()
+        screen_name = get_index_name(location)
+
+        report = "status: "
+        report += get_level(location)
+
         if screen_name is "shop":
-            controller.buy_1()
+            report += get_shop_info(location)
+            #controller.buy_1()
+        elif screen_name is "board":
+            report += get_board_info(location)
+        elif screen_name is "get_item":
+            controller.grab_item_1()
+        else:
+            report += " non-programmed screen"
+
+        print(report, flush=True)
 
 except KeyboardInterrupt as e:
     print("exiting..", flush=True)
