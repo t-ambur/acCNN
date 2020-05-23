@@ -10,22 +10,21 @@ import time
 import constants as c
 import predict
 import crop
-import textConverter
 import AI_Player
 ####
 
 # fix the memory usage problems on both gpus
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
-config = tf.config.experimental.set_memory_growth(physical_devices[0], True)
-config = tf.config.experimental.set_memory_growth(physical_devices[1], True)
+#physical_devices = tf.config.experimental.list_physical_devices('GPU')
+#assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
+#config = tf.config.experimental.set_memory_growth(physical_devices[0], True)
+#config = tf.config.experimental.set_memory_growth(physical_devices[1], True)
 
 ahk = AHK()
 counter = 0
 
 print("Loading CNNs...", flush=True)
 model_screen = tf.keras.models.load_model(c.SCREEN_MODEL_PATH)
-# model2 = tf.keras.models.load_model(c.TEXT_MODEL_PATH)
+model_char = tf.keras.models.load_model(c.CHAR_MODEL_PATH)
 
 
 def screenshot():
@@ -58,12 +57,29 @@ def read(image):
     return predict.predict(image, model_screen, "screen")
 
 
+def read_shop():
+    global model_char
+    pos1_i = predict.predict(r'store\pos1.png', model_char, "character")
+    pos2_i = predict.predict(r'store\pos2.png', model_char, "character")
+    pos3_i = predict.predict(r'store\pos3.png', model_char, "character")
+    pos4_i = predict.predict(r'store\pos4.png', model_char, "character")
+    pos5_i = predict.predict(r'store\pos5.png', model_char, "character")
+    pos1 = c.CHAR_CATEGORIES[pos1_i]
+    pos2 = c.CHAR_CATEGORIES[pos2_i]
+    pos3 = c.CHAR_CATEGORIES[pos3_i]
+    pos4 = c.CHAR_CATEGORIES[pos4_i]
+    pos5 = c.CHAR_CATEGORIES[pos5_i]
+    output = ">>> 1=" + pos1 + " 2=" + pos2 + "\n>>>3=" + pos3 + " 4=" + pos4 + "\n>>>5=" + pos5
+    print(output, flush=True)
+
+
 def get_level(player):
     return "LEVEL=" + str(player.get_level()) + " "
 
 
 def get_shop_info(location, player):
     crop.crop_store(location)
+    read_shop()
     return "GOLD=" + str(player.get_gold()) + " "
 
 
