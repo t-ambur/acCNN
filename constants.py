@@ -36,9 +36,9 @@ SCREEN_MODEL_PATH = "train\\data\\screen\\screen.model"
 CHAR_PATH = "train\\data\\character"
 CHAR_MODEL_PATH = "train\\data\\character\\char.model"
 
-SCREEN_CATEGORIES = ["bag", "board", "character_info", "game_over_transition", "get_item",
-                     "main_menu", "other_players", "post_game", "shop", "upgrade_item_1",
-                     "upgrade_item_2", "upgrade_item_3"]
+SCREEN_CATEGORIES = ["board", "game_over_transition", "get_item",
+                     "main_menu", "post_game", "post_game_items", "shop", "upgrade_item",
+                     "victory"]
 
 CHAR_CATEGORIES = ["abyssal_guard", "abyssalcrawler", "argail_knight", "berserker", "dark_spirit",
                    "defector", "desperate_doctor", "devestator", "doom_arbiter", "dragon_knight",
