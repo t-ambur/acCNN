@@ -16,9 +16,18 @@ BAG_IMG_LOCATION = r"status\bagicon.png"
 LEVEL_IMG_LOCATION = r"status\level.png"
 GOLD_IMG_LOCATION = r"status\gold.png"
 
+STORE_POS_1_PATH = r'store\pos1.png'
+STORE_POS_2_PATH = r'store\pos2.png'
+STORE_POS_3_PATH = r'store\pos3.png'
+STORE_POS_4_PATH = r'store\pos4.png'
+STORE_POS_5_PATH = r'store\pos5.png'
+
 BATCH_SIZE = 10
 EPOCHS = 3
 VALIDATION_SPLIT = .2
+
+DATADIR_SCREENS = "train\\screens"
+DATADIR_CHARS = "train\\characters"
 
 X_NAME = "X.pkl"
 Y_NAME = "y.pkl"

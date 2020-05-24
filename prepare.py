@@ -9,8 +9,8 @@ import constants as c
 # CURRENTLY ONLY FOR SCREENS
 
 # train holds all folders containing labels
-DATADIR_SCREENS = "train\\screens"
-DATADIR_CHARS = "train\\characters"
+DATADIR_SCREENS = c.DATADIR_SCREENS
+DATADIR_CHARS = c.DATADIR_CHARS
 # resize to a square IMG_SIZE x IMG_SIZE
 training_data = []
 
