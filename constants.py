@@ -42,7 +42,8 @@ SCREEN_CATEGORIES = ["bag", "board", "character_info", "game_over_transition", "
 
 CHAR_CATEGORIES = ["abyssal_guard", "abyssalcrawler", "argail_knight", "berserker",
                    "defector", "desperate_doctor", "devestator", "doom_arbiter", "dragon_knight",
-                   "dwarf_sniper", "e_ranger", "egg", "elder", "empty", "evil_knight", "flame_wizard",
+                   "dwarf_sniper", "e_ranger", "egg", "elder", "empty", "evil_knight",
+                   "fallen_witcher", "flame_wizard",
                    "frost_knight", "frostblaze_dragon", "god_of_thunder", "god_of_war", "goddess_of_light",
                    "grimtouch", "heaven_bomber", "hell_knight", "herald", "lightblade_knight",
                    "lord_of_sand", "ogre_mage", "pirate", "razorclaw", "reaper", "redaxe", "ripper",
