@@ -8,8 +8,8 @@ import constants as c
 
 gui.theme('DarkAmber')
 
-directory = "classified_wrong"
-char_path = c.DATADIR_CHARS
+directory = "record"
+screen_path = c.DATADIR_SCREENS
 
 imgs = []
 names = []
@@ -18,7 +18,7 @@ for img in os.listdir(directory):
 
 file_counter = 0
 
-for folder_name in os.listdir(char_path):
+for folder_name in os.listdir(screen_path):
     name = str(folder_name)
     names.append(name)
 
@@ -26,14 +26,16 @@ for folder_name in os.listdir(char_path):
 print("Setting up GUI", flush=True)
 layout = [[gui.Text("What is this image?")],
           [gui.Image(imgs[0], key='image'),
-          gui.Listbox(values=names, size=(25,55), key="list", enable_events=True)]]
+          gui.Listbox(values=names, size=(25,55), key="list", enable_events=True),
+          gui.Button("skip", size=(10,50))]]
 
 window = gui.Window("Wrong Sorter", layout)
 
 
 def remove_image(path):
     if os.path.exists(path):
-        os.remove(path)
+        print("would remove", str(path))
+        #os.remove(path)
 
 
 def clear_directory():
@@ -49,7 +51,8 @@ def next_image(images):
     try:
         path = images[file_counter]
         window['image'].Update(path)
-    except Exception:
+    except Exception as e:
+        print("assuming out of images...", str(e))
         clear_directory()
         print("Finished!", flush=True)
         window.close()
@@ -57,22 +60,29 @@ def next_image(images):
 
 
 def put_in_folder(fold_name, imgs):
-    global char_path, file_counter
+    global screen_path, file_counter
     p_source = imgs[file_counter]
-    p_dest = os.path.join(char_path, fold_name)
+    p_dest = os.path.join(screen_path, fold_name)
     temp_name = str(time.time()) + ".png"
-    new_name = os.path.join("classified_wrong", temp_name)
+    new_name = os.path.join("record", temp_name)
     os.rename(p_source, new_name)
     p_source = new_name
     shutil.copy(p_source, p_dest)
     print("Copied to: " + p_dest, flush=True)
+    if str(fold_name) == "shop":
+        p_dest = "toclassify"
+        shutil.copy(p_source, p_dest)
+        print("Copied to: " + p_dest, flush=True)
 
 
 while True:
     event, values = window.read()
     if event in (None, 'Exit'):
         break
-    if values['list']:
+    if event in "skip":
+        print("skipping...", flush=True)
+        next_image(imgs)
+    elif values['list']:
         put_in_folder(values['list'][0], imgs)
         next_image(imgs)
 
