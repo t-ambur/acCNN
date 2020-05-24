@@ -1,5 +1,6 @@
 from PIL import Image
 import constants as c
+import sys
 
 
 # 1600x900
@@ -62,3 +63,8 @@ def crop_bag_icon(image_name):
 
     im_cropped = im.crop((x1, y1, x2, y2))
     im_cropped.save("status\\bagicon.png")
+
+
+if len(sys.argv) > 1:
+    crop_store(sys.argv[1])
+    print("cropped. Done.")

@@ -52,7 +52,7 @@ def next_image(images):
         path = images[file_counter]
         window['image'].Update(path)
     except Exception as e:
-        print("assuming out of images...", str(e))
+        print("assuming out of images..." + str(e), flush=True)
         clear_directory()
         print("Finished!", flush=True)
         window.close()
@@ -86,5 +86,5 @@ while True:
         put_in_folder(values['list'][0], imgs)
         next_image(imgs)
 
-#clear_directory()
+clear_directory()
 window.close()

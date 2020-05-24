@@ -40,15 +40,18 @@ SCREEN_CATEGORIES = ["bag", "board", "character_info", "game_over_transition", "
                      "main_menu", "other_players", "post_game", "shop", "upgrade_item_1",
                      "upgrade_item_2", "upgrade_item_3"]
 
-CHAR_CATEGORIES = ["abyssal_guard", "abyssalcrawler", "argail_knight", "berserker",
+CHAR_CATEGORIES = ["abyssal_guard", "abyssalcrawler", "argail_knight", "berserker", "dark_spirit",
                    "defector", "desperate_doctor", "devestator", "doom_arbiter", "dragon_knight",
                    "dwarf_sniper", "e_ranger", "egg", "elder", "empty", "evil_knight",
-                   "fallen_witcher", "flame_wizard",
+                   "fallen_witcher", "flame_wizard", "fortune_teller",
                    "frost_knight", "frostblaze_dragon", "god_of_thunder", "god_of_war", "goddess_of_light",
-                   "grimtouch", "heaven_bomber", "hell_knight", "herald", "lightblade_knight",
+                   "grimtouch", "heaven_bomber", "helicopter",
+                   "hell_knight", "herald", "lightblade_knight",
                    "lord_of_sand", "ogre_mage", "pirate", "razorclaw", "reaper", "redaxe", "ripper",
                    "rogue_guard", "shadowcrawler", "shining_archer", "shining_assassin", "shining_dragon",
                    "siren", "sky_breaker", "soul_breaker", "storm_shaman", "swordsman", "taboo_witcher",
-                   "the_source", "thunder_spirit", "tsunami_stalker", "tusk_champ", "umbra", "venom",
+                   "the_scryer",
+                   "the_source", "thunder_spirit", "tsunami_stalker", "tusk_champ", "umbra",
+                   "unicorn", "venom",
                    "venomancer", "warpwood_sage", "water_spirit", "werewolf", "whisper_seer", "wind_ranger",
                    "winter_dragon", "worm"]
