@@ -113,6 +113,7 @@ try:
         if screen_name is "shop":
             report += get_shop_info(location, player)
             if st is "shop":
+                time.sleep(1)
                 if player.get_store().num_bought <= 0:
                     success = player.buy_pos(1, 5)
                     if success:
