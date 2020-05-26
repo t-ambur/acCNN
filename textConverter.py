@@ -5,6 +5,27 @@ from PIL import Image
 import PIL.ImageOps
 import constants
 
+# THIS MODULE WAS NOT USED DUE TO TESSERACT BEING AWFUL
+
+# These are for the google image to text that works poorly
+'''
+def get_level(location):
+    crop.crop_level(location)
+    return "LEVEL=" + str(textConverter.get_level()) + " "
+
+
+def get_shop_info(location):
+    crop.crop_gold(location)
+    crop.crop_store(location)
+    return "GOLD=" + str(textConverter.get_gold()) + " "
+
+
+def get_board_info(location):
+    crop.crop_bag_icon(location)
+    level = get_level(location)
+    return level + "ITEMS_IN_BAG=" + str(textConverter.get_bag_items()) + " "
+'''
+
 '''
     image = cv2.imread(image)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

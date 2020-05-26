@@ -1,9 +1,8 @@
 from ahk import AHK
 import sys
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # or any 0 all 1 no info 2 no info warning 3 filter all
+#import os
+#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # or any 0 all 1 no info 2 no info warning 3 filter all
 import pyscreenshot as ImageGrab
-import threading
 import tensorflow as tf
 import time
 ####
@@ -138,23 +137,3 @@ try:
 except KeyboardInterrupt as e:
     print("\nexiting..", flush=True)
     sys.exit()
-
-
-# These are for the google image to text that works poorly
-'''
-def get_level(location):
-    crop.crop_level(location)
-    return "LEVEL=" + str(textConverter.get_level()) + " "
-
-
-def get_shop_info(location):
-    crop.crop_gold(location)
-    crop.crop_store(location)
-    return "GOLD=" + str(textConverter.get_gold()) + " "
-
-
-def get_board_info(location):
-    crop.crop_bag_icon(location)
-    level = get_level(location)
-    return level + "ITEMS_IN_BAG=" + str(textConverter.get_bag_items()) + " "
-'''

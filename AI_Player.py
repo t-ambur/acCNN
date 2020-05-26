@@ -1,5 +1,8 @@
 import controls
 
+# TODO
+# connect lists of characters to the rest of the functions
+
 
 class Player:
     def __init__(self, ahk, rnd=1):
@@ -13,7 +16,21 @@ class Player:
         self.deployed_chars = 0
         self.chars_on_bench = 0
         self.bench_full = False
+        self.board_list = []
+        self.bench_list = []
         self.store = Store()
+
+    def add_to_bench(self, character):
+        if len(self.board_list) < 8:
+            self.bench_list.append(character)
+            return True
+        return False
+
+    def add_to_board(self, character):
+        if len(self.bench_list) < self.level:
+            self.board_list.append(character)
+            return True
+        return False
 
     def next_round(self):
         self.round += 1
