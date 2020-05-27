@@ -2,6 +2,28 @@ import controls
 
 # TODO
 # connect lists of characters to the rest of the functions
+'''
+gold
+1 1
+2 2
+3 3
+4 4
+5 5
+
+
+
+chance
+1  100
+2  70 30
+3  60 35 5
+4  50 35 15 0  0
+5  40 35 23 2  0
+6  33 30 30 7  0
+7  30 30 30 10 0
+8  24 30 30 15 1
+9  22 30 25 20 3
+10 19 25 25 25 6
+'''
 
 
 class Player:
