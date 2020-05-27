@@ -1,35 +1,11 @@
 import controls
-
-# TODO
-# connect lists of characters to the rest of the functions
-'''
-gold
-1 1
-2 2
-3 3
-4 4
-5 5
-
-
-
-chance
-1  100
-2  70 30
-3  60 35 5
-4  50 35 15 0  0
-5  40 35 23 2  0
-6  33 30 30 7  0
-7  30 30 30 10 0
-8  24 30 30 15 1
-9  22 30 25 20 3
-10 19 25 25 25 6
-'''
+import shopInfo
 
 
 class Player:
     def __init__(self, ahk, rnd=1):
         self.controller = controls.Control(ahk)
-        self.gold = 5
+        self.gold = 1
         self.round = rnd
         self.exp = (rnd-1)
         self.level = 1
@@ -41,31 +17,57 @@ class Player:
         self.board_list = []
         self.bench_list = []
         self.store = Store()
+        self.init_lists()
 
-    def add_to_bench(self, character):
-        if len(self.board_list) < 8:
-            self.bench_list.append(character)
+    def init_lists(self):
+        for i in range(8):
+            self.bench_list.append(None)
+
+    def add_to_bench(self, character, pos):
+        if self.chars_on_bench < 8:
+            self.bench_list[pos] = character
+            self.chars_on_bench += 1
+            return True
+        return False
+
+    def find_empty_bench_slot(self):
+        for slot in self.bench_list:
+            if slot is None:
+                return self.bench_list.index(slot)
+        return -1
+
+    def remove_from_bench(self, pos):
+        if self.bench_list[pos] is not None:
+            self.bench_list[pos] = None
+            self.chars_on_bench -= 1
             return True
         return False
 
     def add_to_board(self, character):
-        if len(self.bench_list) < self.level:
+        if self.deployed_chars < self.level:
             self.board_list.append(character)
+            self.deployed_chars += 1
             return True
         return False
 
     def next_round(self):
         self.round += 1
         self.exp += 1
-        self.gold += 5
+        if self.round == 2:
+            self.gold += 2
+        elif self.round == 3:
+            self.gold += 3
+        elif self.round == 4:
+            self.gold += 4
+        else:
+            self.gold += 5
         self.check_levelup()
         self.store.reset_store()
 
     def deploy(self, pos):
         if 1 <= pos <= 8:
             self.controller.deploy(pos)
-            self.deploy_character()
-            self.remove_from_bench(1)
+            self.remove_from_bench(pos)
 
     def choose_item(self, num_items, option):
         if num_items == 1:
@@ -80,6 +82,30 @@ class Player:
 
     def get_level(self):
         return self.level
+
+    def get_chance(self):
+        chances = []
+        if self.level == 1:
+            chances = [100, 0, 0, 0, 0]
+        elif self.level == 2:
+            chances = [70, 30, 0, 0, 0]
+        elif self.level == 3:
+            chances = [60, 35, 5, 0, 0]
+        elif self.level == 4:
+            chances = [50, 35, 15, 0, 0]
+        elif self.level == 5:
+            chances = [40, 35, 23, 2, 0]
+        elif self.level == 6:
+            chances = [33, 30, 30, 7, 0]
+        elif self.level == 7:
+            chances = [30, 30, 30, 10, 0]
+        elif self.level == 8:
+            chances = [24, 30, 30, 15, 1]
+        elif self.level == 9:
+            chances = [22, 30, 25, 20, 3]
+        else:
+            chances = [19, 25, 25, 25, 6]
+        return chances
 
     def check_levelup(self):
         x = self.exp
@@ -109,8 +135,8 @@ class Player:
     def spend_gold(self, amount):
         if amount <= self.gold:
             self.gold -= amount
-        else:
-            self.gold = 0
+            return True
+        return False
 
     def get_gold(self):
         return self.gold
@@ -127,25 +153,11 @@ class Player:
         else:
             self.bag_items = 0
 
-    def add_to_bench(self):
-        if self.chars_on_bench < 8:
-            self.chars_on_bench += 1
-
-    def remove_from_bench(self, num):
-        if num <= self.chars_on_bench:
-            self.chars_on_bench -= num
-        else:
-            self.chars_on_bench = 0
-
     def number_on_bench(self):
         return self.chars_on_bench
 
     def is_bench_full(self):
         return self.chars_on_bench >= 8
-
-    def deploy_character(self):
-        if self.deployed_chars < self.level:
-            self.deployed_chars += 1
 
     def can_deploy_character(self):
         return self.deployed_chars < self.level
@@ -154,9 +166,18 @@ class Player:
         if 0 <= pos <= 4:
             if cost <= self.gold:
                 if not self.is_bench_full():
-                    self.store.buy_pos(pos)
-                    self.add_to_bench()
-                    self.spend_gold(cost)
+                    character = self.store.buy_pos(pos)
+
+                    slot_to_place = self.find_empty_bench_slot()
+                    if slot_to_place <= -1:
+                        return False
+
+                    self.add_to_bench(character, slot_to_place)
+
+                    spent = self.spend_gold(cost)
+                    if not spent:
+                        return False
+
                     self.controller.buy(pos)
                     return True
         return False
@@ -168,7 +189,16 @@ class Player:
 class Store:
     def __init__(self):
         self.positions = [True, True, True, True, True]
+        self.characters = []
         self.num_bought = 0
+
+    def load_characters(self, l):
+        self.characters.clear()
+        for name in l:
+            self.characters.append(shopInfo.Character(name))
+
+    def get_characters(self):
+        return self.characters
 
     def reset_store(self):
         for position in self.positions:
@@ -178,6 +208,8 @@ class Store:
     def buy_pos(self, pos):
         if 0 <= pos <= 4:
             self.positions[pos] = False
+            return self.characters[pos]
+        return None
 
     def can_buy_pos(self, pos):
         if 0 <= pos <= 4:

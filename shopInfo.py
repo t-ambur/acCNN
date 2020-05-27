@@ -53,6 +53,13 @@ class Character:
         self.__race2 = None
         self.__rarity = UNDEF_RARITY
         self.__init_values()
+        self.__stars = 1
+
+    def star_up(self):
+        self.__stars += 1
+
+    def get_stars(self):
+        return self.__stars
 
     def get_name(self):
         return self.__name
