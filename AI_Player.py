@@ -287,7 +287,8 @@ class Store:
     def load_characters(self, l):
         self.characters.clear()
         for name in l:
-            self.characters.append(shopInfo.Character(name))
+            char = shopInfo.Character(name)
+            self.characters.append(char)
 
     def get_characters(self):
         return self.characters

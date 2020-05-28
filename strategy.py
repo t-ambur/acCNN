@@ -14,6 +14,7 @@ class Strategy:
     def determine_buys(self, list_of_characters):
         buys = []
         for character in list_of_characters:
+            print(character.get_name())
             if self.__part_of_strat(character):
                 buys.append(list_of_characters.index(character))
         return buys

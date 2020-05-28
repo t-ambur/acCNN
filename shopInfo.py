@@ -80,6 +80,9 @@ class Character:
     def is_warrior(character):
         if character.get_class_name() is WARRIOR:
             return True
+        elif character.get_class_name() is None:
+            print("CLASS IS NONE", flush=True)
+            return False
         return False
 
     def __init_values(self):
