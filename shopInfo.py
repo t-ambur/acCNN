@@ -76,6 +76,12 @@ class Character:
     def get_rarity(self):
         return self.__rarity
 
+    @staticmethod
+    def is_warrior(character):
+        if character.get_class_name() is WARRIOR:
+            return True
+        return False
+
     def __init_values(self):
         switch = {
             c.CHAR_CATEGORIES[0]: self.__abyssal_guard(),

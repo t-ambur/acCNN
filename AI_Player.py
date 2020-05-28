@@ -1,13 +1,17 @@
 import controls
 import shopInfo
+import predict
+import constants as c
+import strategy
 
 
 class Player:
-    def __init__(self, ahk, rnd=1):
+    def __init__(self, ahk, c_model):
         self.controller = controls.Control(ahk)
         self.gold = 1
-        self.round = rnd
-        self.exp = (rnd-1)
+        self.round = 1
+        self.char_model = c_model
+        self.exp = 0
         self.level = 1
         self.check_levelup()
         self.bag_items = 0
@@ -16,8 +20,9 @@ class Player:
         self.bench_full = False
         self.board_list = []
         self.bench_list = []
-        self.store = Store()
+        self.store = Store(c_model)
         self.init_lists()
+        self.strategy = strategy.Strategy()
 
     def init_lists(self):
         for i in range(8):
@@ -25,10 +30,82 @@ class Player:
 
     def add_to_bench(self, character, pos):
         if self.chars_on_bench < 8:
+            if self.two_on_bench(character):
+                self.chars_on_bench -= 1
+                self.handle_star_up_bench_2(character)
+                return True
+            elif self.two_on_board(character):
+                return True
+            elif self.one_bench_one_board(character):
+                self.chars_on_bench -= 1
+                self.handle_star_up_bench_1(character)
+                return True
             self.bench_list[pos] = character
             self.chars_on_bench += 1
             return True
+        elif self.two_on_bench(character):
+            self.chars_on_bench -= 1
+            self.handle_star_up_bench_2(character)
+        elif self.one_bench_one_board(character):
+            self.chars_on_bench -= 1
+            self.handle_star_up_bench_1(character)
+            return True
         return False
+
+    def two_on_bench(self, character):
+        found_once = False
+        for char in self.bench_list:
+            if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
+                if not found_once:
+                    found_once = True
+                else:
+                    return True
+        return False
+
+    def two_on_board(self, character):
+        found_once = False
+        for char in self.board_list:
+            if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
+                if not found_once:
+                    found_once = True
+                else:
+                    return True
+        return False
+
+    def two_stars(self, character):
+        if self.two_on_bench(character):
+            return True
+        # check for one on bench and one on board
+        if self.one_bench_one_board(character):
+            return True
+        # check for two on board
+        if self.two_on_board(character):
+            return True
+        return False
+
+    def one_bench_one_board(self, character):
+        for char in self.board_list:
+            if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
+                for ben_char in self.bench_list:
+                    if ben_char.get_name() == character.get_name() and ben_char.get_stars() == character.get_stars():
+                        return True
+        return False
+
+    def handle_star_up_bench_1(self, character):
+        for char in self.bench_list:
+            if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
+                i = self.bench_list.index(char)
+                self.bench_list[i] = None
+
+    def handle_star_up_bench_2(self, character):
+        found_once = False
+        for char in self.bench_list:
+            if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
+                if not found_once:
+                    found_once = True
+                else:
+                    i = self.bench_list.index(char)
+                    self.bench_list[i] = None
 
     def find_empty_bench_slot(self):
         for slot in self.bench_list:
@@ -68,6 +145,13 @@ class Player:
         if 1 <= pos <= 8:
             self.controller.deploy(pos)
             self.remove_from_bench(pos)
+            return True
+        if pos == -1:
+            p = self.find_empty_bench_slot()
+            self.controller.deploy(p)
+            self.remove_from_bench(p)
+            return True
+        return False
 
     def choose_item(self, num_items, option):
         if num_items == 1:
@@ -165,32 +249,40 @@ class Player:
     def buy_pos(self, pos, cost):
         if 0 <= pos <= 4:
             if cost <= self.gold:
-                if not self.is_bench_full():
-                    character = self.store.buy_pos(pos)
-
+                character = self.store.buy_pos(pos)
+                if not self.is_bench_full() or self.two_stars(character):
                     slot_to_place = self.find_empty_bench_slot()
                     if slot_to_place <= -1:
                         return False
-
-                    self.add_to_bench(character, slot_to_place)
 
                     spent = self.spend_gold(cost)
                     if not spent:
                         return False
 
+                    self.add_to_bench(character, slot_to_place)
                     self.controller.buy(pos)
                     return True
         return False
+
+    def buy_if_needed(self):
+        positions_to_buy = self.strategy.determine_buys(self.store.characters)
+        if len(positions_to_buy) <= 0:
+            return False
+        for pos in positions_to_buy:
+            self.buy_pos(pos, self.store.get_cost_of_pos(pos))
+        return True
 
     def leave_store(self):
         self.controller.toggle_store()
 
 
 class Store:
-    def __init__(self):
+    def __init__(self, model):
         self.positions = [True, True, True, True, True]
         self.characters = []
         self.num_bought = 0
+        self.model_char = model
+        self.report_string = ""
 
     def load_characters(self, l):
         self.characters.clear()
@@ -199,6 +291,9 @@ class Store:
 
     def get_characters(self):
         return self.characters
+
+    def get_cost_of_pos(self, pos):
+        return self.characters[pos].get_cost()
 
     def reset_store(self):
         for position in self.positions:
@@ -219,6 +314,24 @@ class Store:
 
     def how_many_bought(self):
         return self.num_bought
+
+    def read_in_shop(self):
+        pos1_i = predict.predict(r'store\pos1.png', self.model_char, "character")
+        pos2_i = predict.predict(r'store\pos2.png', self.model_char, "character")
+        pos3_i = predict.predict(r'store\pos3.png', self.model_char, "character")
+        pos4_i = predict.predict(r'store\pos4.png', self.model_char, "character")
+        pos5_i = predict.predict(r'store\pos5.png', self.model_char, "character")
+        pos1 = c.CHAR_CATEGORIES[pos1_i]
+        pos2 = c.CHAR_CATEGORIES[pos2_i]
+        pos3 = c.CHAR_CATEGORIES[pos3_i]
+        pos4 = c.CHAR_CATEGORIES[pos4_i]
+        pos5 = c.CHAR_CATEGORIES[pos5_i]
+        self.report_string = ">>> 1=" + pos1 + " 2=" + pos2 + "\n>>>3=" + pos3 + " 4=" + pos4 + "\n>>>5=" + pos5
+        print(self.report_string, flush=True)
+        self.load_characters([pos1, pos2, pos3, pos4, pos5])
+
+    def get_report(self):
+        return self.report_string
 
 
 class State:
