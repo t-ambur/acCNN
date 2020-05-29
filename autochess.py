@@ -100,6 +100,7 @@ try:
         elif screen_name is "board":
             report += get_board_info(player)
             if st is "board":
+                time.sleep(.2)
                 if player.can_deploy_character():
                     player.deploy(-1)
                 state.next_state()

@@ -23,6 +23,7 @@ class Player:
         self.store = Store(c_model)
         self.init_lists()
         self.strategy = strategy.Strategy()
+        self.strategy.set_strategy(strategy.WARRIORS)
 
     def init_lists(self):
         for i in range(8):
@@ -55,6 +56,8 @@ class Player:
     def two_on_bench(self, character):
         found_once = False
         for char in self.bench_list:
+            if char is None:
+                continue
             if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
                 if not found_once:
                     found_once = True
@@ -65,6 +68,8 @@ class Player:
     def two_on_board(self, character):
         found_once = False
         for char in self.board_list:
+            if char is None:
+                continue
             if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
                 if not found_once:
                     found_once = True
@@ -87,6 +92,8 @@ class Player:
         for char in self.board_list:
             if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
                 for ben_char in self.bench_list:
+                    if char is None:
+                        continue
                     if ben_char.get_name() == character.get_name() and ben_char.get_stars() == character.get_stars():
                         return True
         return False
@@ -112,6 +119,11 @@ class Player:
             if slot is None:
                 return self.bench_list.index(slot)
         return -1
+
+    def find_char_on_bench(self):
+        for slot in self.bench_list:
+            if slot is not None:
+                return self.bench_list.index(slot)
 
     def remove_from_bench(self, pos):
         if self.bench_list[pos] is not None:
@@ -146,8 +158,8 @@ class Player:
             self.controller.deploy(pos)
             self.remove_from_bench(pos)
             return True
-        if pos == -1:
-            p = self.find_empty_bench_slot()
+        elif pos == -1:
+            p = self.find_char_on_bench()
             self.controller.deploy(p)
             self.remove_from_bench(p)
             return True
@@ -253,23 +265,29 @@ class Player:
                 if not self.is_bench_full() or self.two_stars(character):
                     slot_to_place = self.find_empty_bench_slot()
                     if slot_to_place <= -1:
+                        print("couldn't find slot", flush=True)
                         return False
 
                     spent = self.spend_gold(cost)
                     if not spent:
+                        print("couldnt spend", flush=True)
                         return False
 
                     self.add_to_bench(character, slot_to_place)
                     self.controller.buy(pos)
                     return True
+        print("POS OR GOLD OR BENCHFULL", flush=True)
         return False
 
     def buy_if_needed(self):
+        positions_to_buy = []
         positions_to_buy = self.strategy.determine_buys(self.store.characters)
         if len(positions_to_buy) <= 0:
             return False
         for pos in positions_to_buy:
-            self.buy_pos(pos, self.store.get_cost_of_pos(pos))
+            ok = self.buy_pos(pos, self.store.get_cost_of_pos(pos))
+            if not ok:
+                print("COULD NOT BUY POS:", str(pos), flush=True)
         return True
 
     def leave_store(self):
@@ -288,6 +306,7 @@ class Store:
         self.characters.clear()
         for name in l:
             char = shopInfo.Character(name)
+            print(int(char.get_class_name()))
             self.characters.append(char)
 
     def get_characters(self):
