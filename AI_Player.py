@@ -5,21 +5,8 @@ import constants as c
 import strategy
 
 # TODO
-# bugfixes, last crash:
-''' Traceback (most recent call last):
-  File "autochess.py", line 95, in <module>
-    bought = player.buy_if_needed()
-  File "D:\Users\Trevor\PycharmProjects\autochess\AI_Player.py", line 312, in buy_if_needed
-    ok = self.buy_pos(pos, self.store.get_cost_of_pos(pos))
-  File "D:\Users\Trevor\PycharmProjects\autochess\AI_Player.py", line 300, in buy_pos
-    self.add_to_bench(character, slot_to_place)
-  File "D:\Users\Trevor\PycharmProjects\autochess\AI_Player.py", line 36, in add_to_bench
-    self.handle_star_up_bench_2(character)
-  File "D:\Users\Trevor\PycharmProjects\autochess\AI_Player.py", line 110, in handle_star_up_bench_2
-    if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
-AttributeError: 'NoneType' object has no attribute 'get_name'
-'''
 # Also, code to deploy is not working
+
 
 class Player:
     def __init__(self, ahk, c_model):
@@ -105,6 +92,8 @@ class Player:
         return False
 
     def one_bench_one_board(self, character):
+        if character is None:
+            return False
         for char in self.board_list:
             if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
                 for ben_char in self.bench_list:
@@ -115,6 +104,8 @@ class Player:
         return False
 
     def handle_star_up_bench_1(self, character):
+        if character is None:
+            return False
         for char in self.bench_list:
             if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
                 i = self.bench_list.index(char)
@@ -122,6 +113,8 @@ class Player:
 
     def handle_star_up_bench_2(self, character):
         found_once = False
+        if character is None:
+            return False
         for char in self.bench_list:
             if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
                 if not found_once:

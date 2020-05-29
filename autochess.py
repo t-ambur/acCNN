@@ -102,8 +102,9 @@ try:
             if st is "board":
                 time.sleep(.2)
                 if player.can_deploy_character():
-                    deployed = player.deploy(-1)
-                    report += "\ndeployed? " + str(deployed) + " "
+                    pass
+                    #deployed = player.deploy(-1)
+                    #report += "\ndeployed? " + str(deployed) + " "
                 state.next_state()
         ######################################################################################
         elif screen_name is "get_item":
