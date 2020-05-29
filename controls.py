@@ -24,6 +24,18 @@ class Control:
         time.sleep(1)
 
     @staticmethod
+    def start():
+        KI.KeyPress(KI.C_KEY, KEYPRESS_DELAY)
+        time.sleep(.5)
+        KI.KeyPress(KI.LBRACKET, KEYPRESS_DELAY)
+        time.sleep(.5)
+        KI.KeyPress(KI.LBRACKET, KEYPRESS_DELAY)
+        time.sleep(.5)
+        KI.KeyPress(KI.LBRACKET, KEYPRESS_DELAY)
+        time.sleep(.5)
+        KI.KeyPress(KI.LBRACKET, KEYPRESS_DELAY)
+
+    @staticmethod
     def toggle_store():
         KI.KeyPress(KI.SPACE_BAR, KEYPRESS_DELAY)
         time.sleep(1)
@@ -75,7 +87,7 @@ class Control:
             KI.KeyPress(KI.U_KEY, KEYPRESS_DELAY)
             KI.KeyPress(KI.U_KEY, KEYPRESS_DELAY)
             KI.KeyPress(KI.U_KEY, KEYPRESS_DELAY)
-        elif pos == 7:
+        elif pos == 70:
             KI.KeyPress(KI.I_KEY, KEYPRESS_DELAY)
             KI.KeyPress(KI.I_KEY, KEYPRESS_DELAY)
             KI.KeyPress(KI.I_KEY, KEYPRESS_DELAY)

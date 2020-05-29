@@ -102,13 +102,21 @@ try:
             if st is "board":
                 time.sleep(.2)
                 if player.can_deploy_character():
-                    player.deploy(-1)
+                    deployed = player.deploy(-1)
+                    report += "\ndeployed? " + str(deployed) + " "
                 state.next_state()
         ######################################################################################
         elif screen_name is "get_item":
             if st is "item":
                 player.choose_item(1, 1)
                 state.next_state()
+        #############################################################################
+        elif screen_name is "main_menu":
+            current_round = 1
+            player = AI_Player.Player(ahk, model_char)
+            state = AI_Player.State(current_round)
+            player.start_game()
+            time.sleep(2)
         else:
             report += " non-programmed screen"
 

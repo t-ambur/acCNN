@@ -4,6 +4,22 @@ import predict
 import constants as c
 import strategy
 
+# TODO
+# bugfixes, last crash:
+''' Traceback (most recent call last):
+  File "autochess.py", line 95, in <module>
+    bought = player.buy_if_needed()
+  File "D:\Users\Trevor\PycharmProjects\autochess\AI_Player.py", line 312, in buy_if_needed
+    ok = self.buy_pos(pos, self.store.get_cost_of_pos(pos))
+  File "D:\Users\Trevor\PycharmProjects\autochess\AI_Player.py", line 300, in buy_pos
+    self.add_to_bench(character, slot_to_place)
+  File "D:\Users\Trevor\PycharmProjects\autochess\AI_Player.py", line 36, in add_to_bench
+    self.handle_star_up_bench_2(character)
+  File "D:\Users\Trevor\PycharmProjects\autochess\AI_Player.py", line 110, in handle_star_up_bench_2
+    if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
+AttributeError: 'NoneType' object has no attribute 'get_name'
+'''
+# Also, code to deploy is not working
 
 class Player:
     def __init__(self, ahk, c_model):
@@ -121,9 +137,27 @@ class Player:
         return -1
 
     def find_char_on_bench(self):
+        best = None
+        worst = None
+        stars = 1
         for slot in self.bench_list:
             if slot is not None:
-                return self.bench_list.index(slot)
+                for piece in self.board_list:
+                    if piece is None:
+                        continue
+                    if piece.get_name() == slot.get_name():
+                        worst = self.bench_list.index(slot)
+                    else:
+                        if best is None:
+                            best = self.bench_list.index(slot)
+                            stars = slot.get_stars()
+                        else:
+                            if slot.get_stars() > stars:
+                                best = self.bench_list.index(slot)
+                                stars = slot.get_stars()
+        if best is None:
+            return worst
+        return best
 
     def remove_from_bench(self, pos):
         if self.bench_list[pos] is not None:
@@ -160,9 +194,12 @@ class Player:
             return True
         elif pos == -1:
             p = self.find_char_on_bench()
-            self.controller.deploy(p)
-            self.remove_from_bench(p)
-            return True
+            if p is None:
+                return False
+            if self.deployed_chars < self.get_level():
+                self.controller.deploy(p)
+                self.remove_from_bench(p)
+                return True
         return False
 
     def choose_item(self, num_items, option):
@@ -202,6 +239,9 @@ class Player:
         else:
             chances = [19, 25, 25, 25, 6]
         return chances
+
+    def start_game(self):
+        self.controller.start()
 
     def check_levelup(self):
         x = self.exp
