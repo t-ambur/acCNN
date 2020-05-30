@@ -95,9 +95,11 @@ class Player:
         if character is None:
             return False
         for char in self.board_list:
+            if char is None:
+                continue
             if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
                 for ben_char in self.bench_list:
-                    if char is None:
+                    if ben_char is None:
                         continue
                     if ben_char.get_name() == character.get_name() and ben_char.get_stars() == character.get_stars():
                         return True
@@ -107,6 +109,8 @@ class Player:
         if character is None:
             return False
         for char in self.bench_list:
+            if char is None:
+                continue
             if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
                 i = self.bench_list.index(char)
                 self.bench_list[i] = None
@@ -116,6 +120,8 @@ class Player:
         if character is None:
             return False
         for char in self.bench_list:
+            if char is None:
+                continue
             if char.get_name() == character.get_name() and char.get_stars() == character.get_stars():
                 if not found_once:
                     found_once = True
@@ -316,7 +322,11 @@ class Player:
         positions_to_buy = []
         positions_to_buy = self.strategy.determine_buys(self.store.characters)
         if len(positions_to_buy) <= 0:
-            return False
+            if self.deployed_chars < self.level:
+                print("Plan B. buying first: No available pieces for strat", flush=True)
+                positions_to_buy.append(0)
+            else:
+                return False
         for pos in positions_to_buy:
             ok = self.buy_pos(pos, self.store.get_cost_of_pos(pos))
             if not ok:
